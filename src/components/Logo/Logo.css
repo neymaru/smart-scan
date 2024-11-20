@@ -1,0 +1,28 @@
+.logo-wrapper {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.logo-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  .logo-text {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background-clip: text;
+    color: transparent;
+  }
+}
