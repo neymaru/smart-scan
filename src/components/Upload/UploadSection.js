@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './UploadSection.css';
 
 const UploadSection = () => {
@@ -7,9 +7,10 @@ const UploadSection = () => {
   const [showError, setShowError] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [scale, setScale] = useState(1);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const imageRef = useRef(null);
+  const [imageState, setImageState] = useState({
+    position: { x: 0, y: 0 },
+    dragStart: { x: 0, y: 0 }
+  });
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -18,7 +19,10 @@ const UploadSection = () => {
       setSelectedImage(URL.createObjectURL(file));
       setShowError(false);
       setScale(1);
-      setPosition({ x: 0, y: 0 });
+      setImageState({
+        position: { x: 0, y: 0 },
+        dragStart: { x: 0, y: 0 }
+      });
     }
   };
 
@@ -33,33 +37,34 @@ const UploadSection = () => {
     // 분석 로직
   };
 
-  const handleWheel = (e) => {
+  const handleWheel = useCallback((e) => {
     e.preventDefault();
-    
-    const currentPercent = Math.round(scale * 100);
-    
     const direction = e.deltaY > 0 ? -1 : 1;
-    const newPercent = Math.round((currentPercent + (direction * 10)) / 10) * 10;
-    
-    const clampedPercent = Math.min(Math.max(50, newPercent), 400);
-    
-    setScale(clampedPercent / 100);
-  };
+    const newPercent = Math.round((scale * 100 + (direction * 10)) / 10) * 10;
+    setScale(Math.min(Math.max(50, newPercent), 400) / 100);
+  }, [scale]);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
     setIsDragging(true);
-    setDragStart({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y
-    });
+    setImageState(prev => ({
+      ...prev,
+      dragStart: {
+        x: e.clientX - prev.position.x,
+        y: e.clientY - prev.position.y
+      }
+    }));
   };
 
   const handleMouseMove = (e) => {
     if (isDragging) {
-      const newX = (e.clientX - dragStart.x) * 0.6;
-      const newY = (e.clientY - dragStart.y) * 0.6;
-      setPosition({ x: newX, y: newY });
+      setImageState(prev => ({
+        ...prev,
+        position: {
+          x: e.clientX - prev.dragStart.x,
+          y: e.clientY - prev.dragStart.y
+        }
+      }));
     }
   };
 
@@ -69,14 +74,20 @@ const UploadSection = () => {
 
   const handleOriginalView = () => {
     setScale(1);
-    setPosition({ x: 0, y: 0 });
+    setImageState({
+      position: { x: 0, y: 0 },
+      dragStart: { x: 0, y: 0 }
+    });
   };
 
   const handleDeleteImage = () => {
     setSelectedImage(null);
     setFileName('이미지를 선택해주세요');
     setScale(1);
-    setPosition({ x: 0, y: 0 });
+    setImageState({
+      position: { x: 0, y: 0 },
+      dragStart: { x: 0, y: 0 }
+    });
     
     const fileInput = document.getElementById('image-upload');
     if (fileInput) {
@@ -107,7 +118,15 @@ const UploadSection = () => {
         imagePreview.removeEventListener('wheel', handleWheel);
       };
     }
-  }, [scale, position]);
+  }, [scale, imageState.position]);
+
+  useEffect(() => {
+    return () => {
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage);
+      }
+    };
+  }, [selectedImage]);
 
   return (
     <div className="upload-section">
@@ -169,11 +188,10 @@ const UploadSection = () => {
                 onMouseDown={handleMouseDown}
               >
                 <img 
-                  ref={imageRef}
                   src={selectedImage} 
                   alt="Preview"
                   style={{
-                    transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+                    transform: `scale(${scale}) translate(${imageState.position.x}px, ${imageState.position.y}px)`,
                     transition: isDragging ? 'none' : 'transform 0.1s ease-out'
                   }}
                   draggable={false}

@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import './Logo.css';
 
 const Logo = () => {
@@ -13,4 +12,4 @@ const Logo = () => {
   );
 };
 
-export default memo(Logo);
+export default Logo;
