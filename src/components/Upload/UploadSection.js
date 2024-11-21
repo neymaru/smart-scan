@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import './UploadSection.css';
 
 const UploadSection = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [fileName, setFileName] = useState('이미지를 선택해주세요');
   const [showError, setShowError] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -13,10 +14,22 @@ const UploadSection = () => {
   });
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFileName(file.name);
-      setSelectedImage(URL.createObjectURL(file));
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setFileName(`${files.length}개의 이미지 선택됨`);
+      
+      const imageUrls = files.map(file => ({
+        url: URL.createObjectURL(file),
+        name: file.name,
+        state: {
+          position: { x: 0, y: 0 },
+          dragStart: { x: 0, y: 0 },
+          scale: 1
+        }
+      }));
+      
+      setSelectedImages(imageUrls);
+      setCurrentImageIndex(0);
       setShowError(false);
       setScale(1);
       setImageState({
@@ -27,7 +40,7 @@ const UploadSection = () => {
   };
 
   const handleAnalyze = () => {
-    if (!selectedImage) {
+    if (!selectedImages.length) {
       setShowError(true);
       setTimeout(() => {
         setShowError(false);
@@ -81,7 +94,7 @@ const UploadSection = () => {
   };
 
   const handleDeleteImage = () => {
-    setSelectedImage(null);
+    setSelectedImages([]);
     setFileName('이미지를 선택해주세요');
     setScale(1);
     setImageState({
@@ -93,6 +106,15 @@ const UploadSection = () => {
     if (fileInput) {
       fileInput.value = '';
     }
+  };
+
+  const handleImageSelect = (index) => {
+    setCurrentImageIndex(index);
+    setScale(1);
+    setImageState({
+      position: { x: 0, y: 0 },
+      dragStart: { x: 0, y: 0 }
+    });
   };
 
   useEffect(() => {
@@ -122,11 +144,11 @@ const UploadSection = () => {
 
   useEffect(() => {
     return () => {
-      if (selectedImage) {
-        URL.revokeObjectURL(selectedImage);
-      }
+      selectedImages.forEach(image => {
+        URL.revokeObjectURL(image.url);
+      });
     };
-  }, [selectedImage]);
+  }, [selectedImages]);
 
   return (
     <div className="upload-section">
@@ -138,6 +160,7 @@ const UploadSection = () => {
               id="image-upload"
               className="file-input"
               accept="image/*"
+              multiple
               onChange={handleImageChange}
             />
             <label htmlFor="image-upload" className="file-label">
@@ -157,48 +180,64 @@ const UploadSection = () => {
           이미지를 업로드 해주세요.
         </div>
 
-        {selectedImage && (
-          <>
-            <div className="image-controls">
-              <div className="left-controls">
-                <button 
-                  className="original-view-button"
-                  onClick={handleOriginalView}
+        {selectedImages.length > 0 && (
+          <div className="content-wrapper">
+            <div className="image-list">
+              <h3>이미지 목록</h3>
+              {selectedImages.map((image, index) => (
+                <div 
+                  key={image.name}
+                  className={`image-list-item ${index === currentImageIndex ? 'active' : ''}`}
+                  onClick={() => handleImageSelect(index)}
                 >
-                  <span>원본보기</span>
-                </button>
-                <button 
-                  className="delete-image-button"
-                  onClick={handleDeleteImage}
-                >
-                  <span>사진삭제</span>
-                </button>
-              </div>
-              <div className="scale-indicator">
-                {Math.round(scale * 100)}%
-              </div>
+                  <span className="image-number">{index + 1}</span>
+                  <span className="image-name">{image.name}</span>
+                </div>
+              ))}
             </div>
-            
-            <div className="image-preview">
-              <div 
-                className="image-container"
-                style={{
-                  cursor: isDragging ? 'grabbing' : 'grab'
-                }}
-                onMouseDown={handleMouseDown}
-              >
-                <img 
-                  src={selectedImage} 
-                  alt="Preview"
+
+            <div className="preview-section">
+              <div className="image-controls">
+                <div className="left-controls">
+                  <button 
+                    className="original-view-button"
+                    onClick={handleOriginalView}
+                  >
+                    <span>원본보기</span>
+                  </button>
+                  <button 
+                    className="delete-image-button"
+                    onClick={handleDeleteImage}
+                  >
+                    <span>사진삭제</span>
+                  </button>
+                </div>
+                <div className="scale-indicator">
+                  {Math.round(scale * 100)}%
+                </div>
+              </div>
+              
+              <div className="image-preview">
+                <div 
+                  className="image-container"
                   style={{
-                    transform: `scale(${scale}) translate(${imageState.position.x}px, ${imageState.position.y}px)`,
-                    transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+                    cursor: isDragging ? 'grabbing' : 'grab'
                   }}
-                  draggable={false}
-                />
+                  onMouseDown={handleMouseDown}
+                >
+                  <img 
+                    src={selectedImages[currentImageIndex].url}
+                    alt={`Preview ${currentImageIndex + 1}`}
+                    style={{
+                      transform: `scale(${scale}) translate(${imageState.position.x}px, ${imageState.position.y}px)`,
+                      transition: isDragging ? 'none' : 'transform 0.1s ease-out'
+                    }}
+                    draggable={false}
+                  />
+                </div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

@@ -1,22 +1,33 @@
 .upload-section {
   width: 50%;
-  height: calc(100vh - 4rem);
-  padding: 2rem;
+  height: calc(100vh - 5rem);
+  padding: 1.5rem 2rem;
   border-right: 1px solid #e2e8f0;
   background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: fixed;
+  top: 4rem;
+  left: 0;
+  border-top: 1px solid #e2e8f0;
 }
 
 .upload-container {
-  max-width: 600px;
-  margin: 0 auto;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .input-group {
   display: flex;
   gap: 1rem;
-  margin-bottom: 3rem;
+  margin-bottom: 0.75rem;
   align-items: center;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  flex-shrink: 0;
 }
 
 .file-input-container {
@@ -118,7 +129,7 @@
   text-align: center;
   box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
   z-index: 10;
-  margin-top: -2.5rem;
+  margin-top: 5rem;
 }
 
 .error-message.show {
@@ -132,8 +143,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 0;
-  margin-bottom: 12px;
-  margin-top: -18px;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+  height: 2.5rem;
 }
 
 .left-controls {
@@ -202,15 +214,13 @@
 }
 
 .image-preview {
-  width: 100%;
+  flex: 1;
   border-radius: 12px;
   overflow: hidden;
   background-color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
-  height: calc(100vh - 18rem);
-  position: relative;
-  user-select: none;
+  height: calc(100% - 3rem);
 }
 
 .image-container {
@@ -220,8 +230,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  background-color: white;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .image-container img {
@@ -263,5 +275,119 @@
     background-color: #334155;
     border-color: #475569;
     color: #cbd5e1;
+  }
+}
+
+/* 이미지 그리드 스타일 추가 */
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+
+/* 반응형 그리드 */
+@media (max-width: 768px) {
+  .images-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.content-wrapper {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+  margin-top: 0.5rem;
+  height: calc(100% - 3.25rem);
+}
+
+.image-list {
+  width: 180px;
+  padding: 0.75rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  height: calc(100% - 1.5rem);
+}
+
+.image-list h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: #64748b;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.image-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.image-list-item:hover {
+  background-color: #f8fafc;
+}
+
+.image-list-item.active {
+  background-color: #e2e8f0;
+}
+
+.image-number {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #94a3b8;
+  min-width: 24px;
+}
+
+.image-name {
+  font-size: 0.875rem;
+  color: #475569;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .image-list {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  .image-list h3 {
+    color: #94a3b8;
+    border-bottom-color: #334155;
+  }
+
+  .image-list-item:hover {
+    background-color: #334155;
+  }
+
+  .image-list-item.active {
+    background-color: #475569;
+  }
+
+  .image-number {
+    color: #cbd5e1;
+  }
+
+  .image-name {
+    color: #e2e8f0;
   }
 }
