@@ -180,44 +180,44 @@ const UploadSection = () => {
           이미지를 업로드 해주세요.
         </div>
 
-        {selectedImages.length > 0 && (
-          <div className="content-wrapper">
-            <div className="image-list">
-              <h3>이미지 목록</h3>
-              {selectedImages.map((image, index) => (
-                <div 
-                  key={image.name}
-                  className={`image-list-item ${index === currentImageIndex ? 'active' : ''}`}
-                  onClick={() => handleImageSelect(index)}
-                >
-                  <span className="image-number">{index + 1}</span>
-                  <span className="image-name">{image.name}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="preview-section">
-              <div className="image-controls">
-                <div className="left-controls">
-                  <button 
-                    className="original-view-button"
-                    onClick={handleOriginalView}
-                  >
-                    <span>원본보기</span>
-                  </button>
-                  <button 
-                    className="delete-image-button"
-                    onClick={handleDeleteImage}
-                  >
-                    <span>사진삭제</span>
-                  </button>
-                </div>
-                <div className="scale-indicator">
-                  {Math.round(scale * 100)}%
-                </div>
+        <div className="content-wrapper">
+          <div className="image-list">
+            <h3>이미지 목록</h3>
+            {selectedImages.map((image, index) => (
+              <div 
+                key={image.name}
+                className={`image-list-item ${index === currentImageIndex ? 'active' : ''}`}
+                onClick={() => handleImageSelect(index)}
+              >
+                <span className="image-number">{index + 1}</span>
+                <span className="image-name">{image.name}</span>
               </div>
-              
-              <div className="image-preview">
+            ))}
+          </div>
+
+          <div className="preview-section">
+            <div className="image-controls">
+              <div className="left-controls">
+                <button 
+                  className="original-view-button"
+                  onClick={handleOriginalView}
+                >
+                  <span>원본보기</span>
+                </button>
+                <button 
+                  className="delete-image-button"
+                  onClick={handleDeleteImage}
+                >
+                  <span>사진삭제</span>
+                </button>
+              </div>
+              <div className="scale-indicator">
+                {Math.round(scale * 100)}%
+              </div>
+            </div>
+            
+            <div className="image-preview">
+              {selectedImages.length > 0 && (
                 <div 
                   className="image-container"
                   style={{
@@ -235,10 +235,10 @@ const UploadSection = () => {
                     draggable={false}
                   />
                 </div>
-              </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
