@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import './UploadSection.css';
+import axios from 'axios';
 
 const UploadSection = () => {
   const [selectedImages, setSelectedImages] = useState([]);
@@ -39,7 +40,7 @@ const UploadSection = () => {
     }
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!selectedImages.length) {
       setShowError(true);
       setTimeout(() => {
@@ -47,7 +48,19 @@ const UploadSection = () => {
       }, 2000);
       return;
     }
-    // 분석 로직
+
+    try {
+      const response = await axios.get('http://127.0.0.1:2323/api/checkAttendance/test');
+      console.log('response', response.data.data);
+      alert(response.data.data);
+  
+      console.log('테스트 API 응답:', response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('API 호출 실패:', error);
+      throw error;
+    }
   };
 
   const handleWheel = useCallback((e) => {
