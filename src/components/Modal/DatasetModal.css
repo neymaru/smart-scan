@@ -297,9 +297,9 @@
 .info-text {
   color: #64748b;
   font-size: 0.875rem;
-  /* line-height: 1.5;
-  margin-top: 0.5rem; */
-  margin-left: 1rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+  margin-left: 2rem;
   padding: 0.75rem 1rem;
   background-color: #f8fafc;
   border-radius: 4px;
@@ -310,5 +310,55 @@
     color: #94a3b8;
     background-color: #1e293b;
     border-left-color: #3b82f6;
+  }
+}
+
+.message {
+  padding: 0.75rem;
+  border-left: 4px solid;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.3s ease;
+  position: absolute;
+  visibility: hidden;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  width: calc(100% - 120px);
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  top: 69%;
+}
+
+.message.error {
+  color: #dc2626;
+  background-color: #fef2f2;
+  border-left-color: #dc2626;
+}
+
+.message.success {
+  color: #059669;
+  background-color: #ecfdf5;
+  border-left-color: #059669;
+}
+
+.message.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-color-scheme: dark) {
+  .message.error {
+    background-color: #450a0a;
+    color: #fca5a5;
+    border-left-color: #dc2626;
+  }
+
+  .message.success {
+    background-color: #064e3b;
+    color: #6ee7b7;
+    border-left-color: #059669;
   }
 }

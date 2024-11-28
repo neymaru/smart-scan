@@ -1,23 +1,67 @@
 import { useState, useEffect } from 'react';
 import './DatasetModal.css';
+import axios from 'axios';
 
 const DatasetModal = ({ isOpen, onClose }) => {
   const [imageCount, setImageCount] = useState(1);
   const [fileName, setFileName] = useState('이미지를 선택해주세요');
   const [isClosing, setIsClosing] = useState(false);
   const [clickStartTarget, setClickStartTarget] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setFileName(file.name);
+      setSelectedFile(file);
     }
   };
 
-  const handleSubmit = () => {
-    // 데이터셋 생성 로직 구현 예정
-    console.log('이미지 수:', imageCount);
-    onClose();
+  const hideMessageWithDelay = (callback) => {
+    setTimeout(() => {
+      setShowMessage(false);
+      if (callback) callback();
+    }, 2000);
+  };
+
+  const displayMessage = (text, type = 'error', callback) => {
+    setShowMessage(true);
+    setMessage(text);
+    setMessageType(type);
+    hideMessageWithDelay(callback);
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedFile) {
+      displayMessage('이미지를 선택해주세요.', 'error');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('count', imageCount);
+
+      const response = await axios.post('http://localhost:8081/generate', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      
+
+      if (response.data.success) {
+        displayMessage('데이터셋 생성 성공', 'success', onClose);
+      } else {
+        displayMessage(response.data.message || '데이터셋 생성에 실패했습니다.', 'error');
+      }
+    } catch (error) {
+      displayMessage('데이터셋 생성에 실패했습니다.', 'error');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleOverlayMouseDown = (e) => {
@@ -105,9 +149,26 @@ const DatasetModal = ({ isOpen, onClose }) => {
         <p className="info-text">
           ＊ 무작위 방향으로 회전, 텍스트가 입력된 샘플 데이터셋이 생성됩니다.
         </p>
+        <div 
+          className={`message ${messageType} ${showMessage ? 'show' : ''}`}
+        >
+          {message}
+        </div>
         <div className="modal-footer">
-          <button className="cancel-button" onClick={onClose}>취소</button>
-          <button className="create-button" onClick={handleSubmit}>생성</button>
+          <button 
+            className="cancel-button" 
+            onClick={onClose}
+            disabled={isLoading}
+          >
+            취소
+          </button>
+          <button 
+            className="create-button" 
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {isLoading ? '생성 중...' : '생성'}
+          </button>
         </div>
       </div>
     </div>
