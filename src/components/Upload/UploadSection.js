@@ -13,6 +13,8 @@ const UploadSection = () => {
     position: { x: 0, y: 0 },
     dragStart: { x: 0, y: 0 }
   });
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -43,23 +45,40 @@ const UploadSection = () => {
   const handleAnalyze = async () => {
     if (!selectedImages.length) {
       setShowError(true);
-      setTimeout(() => {
-        setShowError(false);
-      }, 2000);
+      setTimeout(() => setShowError(false), 2000);
       return;
     }
 
     try {
-      const response = await axios.get('http://127.0.0.1:2323/api/checkAttendance/test');
-      console.log('response', response.data.data);
-      alert(response.data.data);
-  
-      console.log('테스트 API 응답:', response.data);
-      return response.data;
+      setIsAnalyzing(true);
+      const formData = new FormData();
+      
+      for await (const image of selectedImages) {
+        const response = await fetch(image.url);
+        const blob = await response.blob();
+        formData.append('images', blob, image.name);
+      }
+      console.log('formData', formData);
+      
+
+      const { data } = await axios.post('http://localhost:8081/analyze', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: ({ loaded, total }) => {
+          setUploadProgress(Math.round((loaded * 100) / total));
+        },
+        timeout: 30000,
+      });
+
+      return data;
       
     } catch (error) {
-      console.error('API 호출 실패:', error);
+      const errorMessage = error?.response?.data?.message ?? error.message;
+      console.error('이미지 분석 실패:', errorMessage);
       throw error;
+      
+    } finally {
+      setIsAnalyzing(false);
+      setUploadProgress(0);
     }
   };
 
@@ -182,10 +201,11 @@ const UploadSection = () => {
             </label>
           </div>
           <button 
-            className="analyze-button"
+            className={`analyze-button ${isAnalyzing ? 'analyzing' : ''}`}
             onClick={handleAnalyze}
+            disabled={isAnalyzing}
           >
-            <span className="button-text">분석</span>
+            {isAnalyzing ? `분석 중 ${uploadProgress}%` : '분석'}
           </button>
         </div>
 
