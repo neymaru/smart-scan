@@ -32,7 +32,7 @@ const DatasetModal = ({ isOpen, onClose }) => {
     setShowMessage(true);
     setMessage(text);
     setMessageType(type);
-    hideMessageWithDelay(callback);
+    hideMessageWithDelay(callback === onClose ? handleClose : callback);
   };
 
   const handleSubmit = async () => {
@@ -73,10 +73,17 @@ const DatasetModal = ({ isOpen, onClose }) => {
       setIsClosing(true);
       setTimeout(() => {
         setIsClosing(false);
-        onClose();
+        handleClose();
       }, 400);
     }
     setClickStartTarget(null);
+  };
+
+  const handleClose = () => {
+    setImageCount(1);
+    setFileName('이미지를 선택해주세요');
+    setSelectedFile(null);
+    onClose();
   };
 
   useEffect(() => {
@@ -85,7 +92,7 @@ const DatasetModal = ({ isOpen, onClose }) => {
         setIsClosing(true);
         setTimeout(() => {
           setIsClosing(false);
-          onClose();
+          handleClose();
         }, 400);
       }
     };
@@ -110,7 +117,7 @@ const DatasetModal = ({ isOpen, onClose }) => {
       <div className={`modal-content ${isClosing ? 'slide-out' : ''}`}>
         <div className="modal-header">
           <h2>데이터셋 생성</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          <button className="close-button" onClick={handleClose}>×</button>
         </div>
         
         <div className="modal-body">
@@ -157,7 +164,7 @@ const DatasetModal = ({ isOpen, onClose }) => {
         <div className="modal-footer">
           <button 
             className="cancel-button" 
-            onClick={onClose}
+            onClick={handleClose}
             disabled={isLoading}
           >
             취소
