@@ -15,6 +15,7 @@ const UploadSection = () => {
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isCoordMode, setIsCoordMode] = useState(false);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -84,13 +85,15 @@ const UploadSection = () => {
 
   const handleWheel = useCallback((e) => {
     e.preventDefault();
+    if (isCoordMode) return;
     const direction = e.deltaY > 0 ? -1 : 1;
     const newPercent = Math.round((scale * 100 + (direction * 10)) / 10) * 10;
     setScale(Math.min(Math.max(50, newPercent), 400) / 100);
-  }, [scale]);
+  }, [scale, isCoordMode]);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
+    if (isCoordMode) return;
     setIsDragging(true);
     setImageState(prev => ({
       ...prev,
@@ -147,6 +150,10 @@ const UploadSection = () => {
       position: { x: 0, y: 0 },
       dragStart: { x: 0, y: 0 }
     });
+  };
+
+  const handleCoordToggle = () => {
+    setIsCoordMode(prev => !prev);
   };
 
   useEffect(() => {
@@ -238,6 +245,12 @@ const UploadSection = () => {
                   <span>원본보기</span>
                 </button>
                 <button 
+                  className={`coord-toggle-button ${isCoordMode ? 'active' : ''}`}
+                  onClick={handleCoordToggle}
+                >
+                  <span>좌표설정 {isCoordMode ? 'ON' : 'OFF'}</span>
+                </button>
+                <button 
                   className="delete-image-button"
                   onClick={handleDeleteImage}
                 >
@@ -254,7 +267,7 @@ const UploadSection = () => {
                 <div 
                   className="image-container"
                   style={{
-                    cursor: isDragging ? 'grabbing' : 'grab'
+                    cursor: isCoordMode ? 'crosshair' : isDragging ? 'grabbing' : 'grab'
                   }}
                   onMouseDown={handleMouseDown}
                 >
