@@ -59,8 +59,6 @@ const UploadSection = () => {
         const blob = await response.blob();
         formData.append('images', blob, image.name);
       }
-      console.log('formData', formData);
-      
 
       const { data } = await axios.post('http://localhost:8081/analyze', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -85,11 +83,14 @@ const UploadSection = () => {
 
   const handleWheel = useCallback((e) => {
     e.preventDefault();
-    if (isCoordMode) return;
     const direction = e.deltaY > 0 ? -1 : 1;
     const newPercent = Math.round((scale * 100 + (direction * 10)) / 10) * 10;
     setScale(Math.min(Math.max(50, newPercent), 400) / 100);
-  }, [scale, isCoordMode]);
+  }, [scale]);
+
+  const handleWheelCoordMode = useCallback((e) => {
+    e.preventDefault();
+  }, []);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
@@ -174,12 +175,13 @@ const UploadSection = () => {
   useEffect(() => {
     const imagePreview = document.querySelector('.image-preview');
     if (imagePreview) {
-      imagePreview.addEventListener('wheel', handleWheel, { passive: false });
+      const wheelHandler = isCoordMode ? handleWheelCoordMode : handleWheel;
+      imagePreview.addEventListener('wheel', wheelHandler, { passive: false });
       return () => {
-        imagePreview.removeEventListener('wheel', handleWheel);
+        imagePreview.removeEventListener('wheel', wheelHandler);
       };
     }
-  }, [scale, imageState.position]);
+  }, [isCoordMode, handleWheel, handleWheelCoordMode]);
 
   useEffect(() => {
     return () => {
