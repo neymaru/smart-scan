@@ -1,18 +1,75 @@
+/* CSS 변수 정의 */
+:root {
+  /* 색상 */
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --error: #dc2626;
+  --border: #e2e8f0;
+  --text-primary: #475569;
+  --text-secondary: #94a3b8;
+  --bg-primary: #fafafa;
+  --bg-secondary: #f8fafc;
+
+  /* 크기 */
+  --spacing-xs: 0.375rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+
+  /* 테두리 */
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 10px;
+  --border-radius-xl: 12px;
+}
+
+/* 다크모드 변수 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #60a5fa;
+    --primary-dark: #3b82f6;
+    --border: #334155;
+    --text-primary: #e2e8f0;
+    --text-secondary: #cbd5e1;
+    --bg-primary: #1e293b;
+    --bg-secondary: #334155;
+  }
+}
+
+/* 공통 믹스인 스타일 */
+.button-base {
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-base {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-xl);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 컴포넌트별 스타일 */
 .upload-section {
   width: 50%;
   height: calc(100vh - 5rem);
-  padding: 1.5rem 2rem;
-  border-right: 1px solid #e2e8f0;
-  background-color: #fafafa;
+  padding: var(--spacing-xl) 2rem;
+  border-right: 1px solid var(--border);
+  background-color: var(--bg-primary);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   position: fixed;
   top: 4rem;
   left: 0;
-  border-top: 1px solid #e2e8f0;
-  opacity: 1;
-  visibility: visible;
+  border-top: 1px solid var(--border);
 }
 
 .upload-container {
@@ -308,23 +365,107 @@
   height: calc(100% - 3.25rem);
 }
 
-.image-list {
-  width: 180px;
-  padding: 0.75rem;
+.left-sidebar {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* 공통 섹션 스타일 */
+.image-list,
+.coordinates-section {
+  padding: 0;
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  overflow-y: auto;
-  height: calc(100% - 1.5rem);
+  display: flex;
+  flex-direction: column;
 }
 
-.image-list h3 {
-  margin: 0 0 1rem 0;
-  font-size: 1rem;
-  color: #64748b;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e2e8f0;
+/* 섹션별 높이 */
+.image-list {
+  height: 60%;
+}
+
+.coordinates-section {
+  height: 40%;
+}
+
+/* 공통 헤더 스타일 */
+.image-list h3,
+.coordinates-section h3 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  background: white;
+  border-radius: 12px 12px 0 0;
+  letter-spacing: 0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 공통 컨텐츠 영역 스타일 */
+.image-list-content,
+.coordinates-content {
+  padding: 0.75rem;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+
+/* 스크롤바 스타일 */
+.image-list-content::-webkit-scrollbar,
+.coordinates-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.image-list-content::-webkit-scrollbar-track,
+.coordinates-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.image-list-content::-webkit-scrollbar-thumb,
+.coordinates-content::-webkit-scrollbar-thumb {
+  background-color: #e2e8f0;
+  border-radius: 4px;
+}
+
+.image-list-content::-webkit-scrollbar-thumb:hover,
+.coordinates-content::-webkit-scrollbar-thumb:hover {
+  background-color: #cbd5e1;
+}
+
+/* 다크모드 */
+@media (prefers-color-scheme: dark) {
+  .image-list,
+  .coordinates-section {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  .image-list h3,
+  .coordinates-section h3 {
+    color: #e2e8f0;
+    border-bottom-color: #334155;
+    background: #1e293b;
+  }
+
+  .image-list-content::-webkit-scrollbar-thumb,
+  .coordinates-content::-webkit-scrollbar-thumb {
+    background-color: #475569;
+  }
+
+  .image-list-content::-webkit-scrollbar-thumb:hover,
+  .coordinates-content::-webkit-scrollbar-thumb:hover {
+    background-color: #64748b;
+  }
 }
 
 .image-list-item {
@@ -369,12 +510,15 @@
 
 /* 다크모드 지원 */
 @media (prefers-color-scheme: dark) {
-  .image-list {
+  .image-list,
+  .image-list h3,
+  .coordinates-section,
+  .coordinates-section h3 {
     background: #1e293b;
-    border-color: #334155;
   }
 
-  .image-list h3 {
+  .image-list h3,
+  .coordinates-section h3 {
     color: #94a3b8;
     border-bottom-color: #334155;
   }
@@ -393,6 +537,16 @@
 
   .image-name {
     color: #e2e8f0;
+  }
+
+  .coordinates-section {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  .coordinates-section h3 {
+    color: #94a3b8;
+    border-bottom-color: #334155;
   }
 }
 
@@ -459,3 +613,285 @@
     color: white;
   }
 }
+
+/* 좌표 리스트 아이템 스타일 수정 */
+.coord-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.375rem 0.625rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.125rem;
+}
+
+.coord-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 체크박스 스타일 */
+.coord-checkbox {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.coord-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* 기존 스타일 유지 */
+.coord-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.coord-value {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* 다크모드에서 체크박스 스타일 */
+@media (prefers-color-scheme: dark) {
+  .coord-checkbox {
+    accent-color: #60a5fa;
+  }
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .coord-list-item:hover {
+    background-color: #334155;
+  }
+
+  .coord-list-item.active {
+    background-color: #475569;
+  }
+
+  .coord-name {
+    color: #e2e8f0;
+  }
+
+  .coord-value {
+    color: #94a3b8;
+  }
+}
+
+/* 헤더 버튼 컨테이너 */
+.coord-header-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+/* 헤더 버튼 스타일 */
+.coord-header-button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #475569;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.coord-header-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.coord-header-button.delete {
+  color: #ef4444;
+}
+
+.coord-header-button.delete:hover {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+.coord-header-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .coord-header-button {
+    color: #e2e8f0;
+    background-color: #334155;
+    border-color: #475569;
+  }
+
+  .coord-header-button:hover {
+    background-color: #475569;
+    border-color: #64748b;
+  }
+
+  .coord-header-button.delete {
+    color: #f87171;
+  }
+
+  .coord-header-button.delete:hover {
+    background-color: #450a0a;
+    border-color: #ef4444;
+  }
+}
+
+/* 좌표 섹션 컨텐츠 영역의 패딩 조정 */
+.coordinates-content {
+  padding: 0.5rem 0em;
+}
+
+/* 컨트롤 영역 스타일 */
+.coord-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.375rem 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+/* 버튼 그룹 공통 스타일 */
+.coord-controls-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;  /* 버튼 간격 */
+}
+
+.coord-control-button {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.70rem;
+  font-weight: 500;
+  color: #475569;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.coord-control-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.coord-control-button.delete {
+  color: #ef4444;
+}
+
+.coord-control-button.delete:hover {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+.coord-control-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 체크박스 스타일 유지 */
+.coord-checkbox {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .coord-controls {
+    background: #1e293b;
+    border-bottom-color: #334155;
+  }
+
+  .coord-control-button {
+    color: #e2e8f0;
+    background-color: #334155;
+    border-color: #475569;
+  }
+
+  .coord-control-button:hover {
+    background-color: #475569;
+    border-color: #64748b;
+  }
+
+  .coord-control-button.delete {
+    color: #f87171;
+  }
+
+  .coord-control-button.delete:hover {
+    background-color: #450a0a;
+    border-color: #ef4444;
+  }
+}
+
+/* 컨트롤 영역 오른쪽 버튼 그룹 */
+.coord-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 전체 삭제 버튼 스타일 */
+.coord-control-button.delete-all {
+  color: #dc2626;
+  border-color: #ef4444;
+}
+
+.coord-control-button.delete-all:hover {
+  background-color: #fee2e2;
+  border-color: #dc2626;
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .coord-control-button.delete-all {
+    color: #ef4444;
+    border-color: #dc2626;
+  }
+
+  .coord-control-button.delete-all:hover {
+    background-color: #450a0a;
+    border-color: #b91c1c;
+  }
+}
+
+/* 전체삭제 버튼에만 disabled 스타일 적용 */
+.coord-control-button.delete-all:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 스크롤바 스타일 통합 */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: var(--border-radius-sm);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
+}
+

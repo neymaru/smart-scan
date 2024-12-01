@@ -16,6 +16,16 @@ const UploadSection = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isCoordMode, setIsCoordMode] = useState(false);
+  const [problems, setProblems] = useState([
+    { id: 'supervisor', name: '감독관 확인', value: '미지정' },
+    ...Array(10).fill().map((_, i) => ({
+      id: `problem${i + 1}`,
+      name: `문제 ${i + 1}`,
+      value: '미지정'
+    }))
+  ]);
+  const [selectedProblemIds, setSelectedProblemIds] = useState([]);
+  const [activeProblemId, setActiveProblemId] = useState(null);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -157,6 +167,69 @@ const UploadSection = () => {
     setIsCoordMode(prev => !prev);
   };
 
+  const handleAddProblem = () => {
+    setProblems(prev => {
+      const lastProblemNumber = prev
+        .filter(p => p.id !== 'supervisor')
+        .reduce((maxNum, problem) => {
+          const num = parseInt(problem.name.replace('문제 ', ''));
+          return Math.max(maxNum, num);
+        }, 0);
+
+      const newProblemNumber = lastProblemNumber + 1;
+
+      return [
+        ...prev,
+        {
+          id: `problem${newProblemNumber}`,
+          name: `문제 ${newProblemNumber}`,
+          value: '미지정'
+        }
+      ];
+    });
+  };
+
+  const handleDeleteSelected = () => {
+    setProblems(prev => 
+      prev.filter(problem => 
+        problem.id === 'supervisor' || !selectedProblemIds.includes(problem.id)
+      )
+    );
+    setSelectedProblemIds([]);
+  };
+
+  const handleProblemClick = (id) => {
+    setActiveProblemId(id);
+  };
+
+  const handleCheckboxChange = (e, id) => {
+    e.stopPropagation();
+    setSelectedProblemIds(prev => {
+      return prev.includes(id)
+        ? prev.filter(pId => pId !== id)
+        : [...prev, id];
+    });
+  };
+
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allProblemIds = problems
+        .filter(p => p.id !== 'supervisor')
+        .map(p => p.id);
+      setSelectedProblemIds(allProblemIds);
+    } else {
+      setSelectedProblemIds([]);
+    }
+  };
+
+  const handleDeleteAll = () => {
+    setProblems(prev => 
+      prev.filter(problem => problem.id === 'supervisor')
+    );
+    setSelectedProblemIds([]);
+    setActiveProblemId(null);
+  };
+
   useEffect(() => {
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -223,18 +296,80 @@ const UploadSection = () => {
         </div>
 
         <div className="content-wrapper">
-          <div className="image-list">
-            <h3>이미지 목록</h3>
-            {selectedImages.map((image, index) => (
-              <div 
-                key={image.name}
-                className={`image-list-item ${index === currentImageIndex ? 'active' : ''}`}
-                onClick={() => handleImageSelect(index)}
-              >
-                <span className="image-number">{index + 1}</span>
-                <span className="image-name">{image.name}</span>
+          <div className="left-sidebar">
+            <div className="image-list">
+              <h3>이미지 목록</h3>
+              <div className="image-list-content">
+                {selectedImages.map((image, index) => (
+                  <div 
+                    key={image.name}
+                    className={`image-list-item ${index === currentImageIndex ? 'active' : ''}`}
+                    onClick={() => handleImageSelect(index)}
+                  >
+                    <span className="image-number">{index + 1}</span>
+                    <span className="image-name">{image.name}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <div className="coordinates-section">
+              <h3>좌표</h3>
+              <div className="coord-controls">
+                <input
+                  type="checkbox"
+                  className="coord-checkbox"
+                  onChange={handleSelectAll}
+                  checked={selectedProblemIds.length === problems.length - 1}
+                  indeterminate={selectedProblemIds.length > 0 && selectedProblemIds.length < problems.length - 1}
+                />
+                <div className="coord-controls-buttons">
+                  <button 
+                    className="coord-control-button"
+                    onClick={handleAddProblem}
+                  >
+                    문제추가
+                  </button>
+                  <button 
+                    className="coord-control-button delete"
+                    onClick={() => {
+                      if (selectedProblemIds.length > 0) {
+                        handleDeleteSelected();
+                      }
+                    }}
+                  >
+                    선택삭제
+                  </button>
+                  <button 
+                    className="coord-control-button delete-all"
+                    onClick={handleDeleteAll}
+                    disabled={problems.length <= 1}
+                  >
+                    전체삭제
+                  </button>
+                </div>
+              </div>
+              <div className="coordinates-content">
+                {problems.map(problem => (
+                  <div 
+                    key={problem.id}
+                    className={`coord-list-item ${activeProblemId === problem.id ? 'active' : ''}`}
+                    onClick={() => handleProblemClick(problem.id)}
+                  >
+                    <div className="coord-item-left">
+                      <input
+                        type="checkbox"
+                        className="coord-checkbox"
+                        checked={selectedProblemIds.includes(problem.id)}
+                        onChange={(e) => handleCheckboxChange(e, problem.id)}
+                        disabled={problem.id === 'supervisor'}
+                      />
+                      <span className="coord-name">{problem.name}</span>
+                    </div>
+                    <span className="coord-value">{problem.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="preview-section">
